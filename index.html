@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Security Alert</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background-color: #000;
+            color: #0f0;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            border: 1px solid #0f0;
+            position: relative;
+        }
+        
+        .header {
+            text-align: center;
+            border-bottom: 1px solid #0f0;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .header h1 {
+            color: #f00;
+            margin-bottom: 5px;
+        }
+        
+        .header img {
+            width: 100px;
+            margin-bottom: 10px;
+        }
+        
+        .blinking {
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes blink {
+            0% { opacity: 1; }
+            50% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background-color: #111;
+            margin: 20px 0;
+            border: 1px solid #0f0;
+        }
+        
+        .progress {
+            height: 100%;
+            width: 0%;
+            background-color: #0f0;
+            transition: width 20s linear;
+        }
+        
+        .typing-text {
+            height: 300px;
+            overflow-y: hidden;
+            position: relative;
+        }
+        
+        #text-container {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+        }
+        
+        .console-line {
+            margin: 5px 0;
+            overflow: hidden;
+            white-space: nowrap;
+            animation: typing 1s steps(60, end);
+        }
+        
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+        
+        .button-container {
+            text-align: center;
+            margin-top: 30px;
+        }
+        
+        .recover-button {
+            background-color: #f00;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .reveal-container {
+            text-align: center;
+            padding: 50px 20px;
+        }
+        
+        .reveal-message {
+            font-size: 24px;
+            color: white;
+            margin-bottom: 30px;
+        }
+        
+        /* Background Matrix effect */
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+        
+        .blink-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 0, 0, 0.2);
+            z-index: 999;
+            display: none;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="blink-overlay" id="blink-overlay"></div>
+    <canvas id="matrix"></canvas>
+    
+    <div class="container" id="hack-container">
+        <div class="header">
+            <h1 class="blinking">⚠️ SECURITY ALERT ⚠️</h1>
+            <h2>System Breach Detected</h2>
+        </div>
+        
+        <p>IP Address: <span id="ip-address">Loading...</span></p>
+        <p>Device: <span id="device-info">Loading...</span></p>
+        <p>Location: <span id="location">Loading...</span></p>
+        
+        <h3 class="blinking">Data Extraction in Progress</h3>
+        
+        <div class="progress-bar">
+            <div class="progress" id="progressBar"></div>
+        </div>
+        
+        <div class="typing-text">
+            <div id="text-container"></div>
+        </div>
+        
+        <div class="button-container">
+            <button class="recover-button" id="recover-button">STOP DATA BREACH</button>
+        </div>
+    </div>
+    
+    <div class="container hidden" id="reveal-container">
+        <div class="reveal-container">
+            <h2>GOTCHA! 🤣</h2>
+            <p class="reveal-message">This was just a harmless prank!</p>
+            <p>No data was accessed or stolen. Your device is completely safe.</p>
+            <p>Share this prank with your friends for a good laugh!</p>
+            <p id="share-link"></p>
+            <button class="recover-button" id="share-button" style="background-color: #0f0;">PRANK ANOTHER FRIEND</button>
+        </div>
+    </div>
+
+    <script>
+        // Matrix background effect
+        const canvas = document.getElementById('matrix');
+        const ctx = canvas.getContext('2d');
+        
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        
+        const katakana = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヰヱヲ';
+        const latin = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        const nums = '0123456789';
+        const hack_terms = ['ACCESS GRANTED', 'FIREWALL BYPASSED', 'BACKDOOR INSTALLED', 'ROOT ACCESS', 'PASSWORDS DUMPED'];
+        
+        const alphabet = katakana + latin + nums;
+        
+        const fontSize = 16;
+        const columns = canvas.width/fontSize;
+        
+        const rainDrops = [];
+        
+        for (let x = 0; x < columns; x++) {
+            rainDrops[x] = 1;
+        }
+        
+        const draw = () => {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = '#0f0';
+            ctx.font = fontSize + 'px monospace';
+            
+            for (let i = 0; i < rainDrops.length; i++) {
+                const text = alphabet.charAt(Math.floor(Math.random() * alphabet.length));
+                ctx.fillText(text, i*fontSize, rainDrops[i]*fontSize);
+                
+                if (rainDrops[i]*fontSize > canvas.height && Math.random() > 0.975) {
+                    rainDrops[i] = 0;
+                }
+                rainDrops[i]++;
+            }
+        };
+        
+        setInterval(draw, 30);
+        
+        // Get user info (non-invasive)
+        fetch('https://ipapi.co/json/')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('ip-address').textContent = data.ip || "192.168.1." + Math.floor(Math.random() * 255);
+                document.getElementById('location').textContent = (data.city ? data.city + ", " + data.country_name : "Unknown Location");
+            })
+            .catch(error => {
+                document.getElementById('ip-address').textContent = "192.168.1." + Math.floor(Math.random() * 255);
+                document.getElementById('location').textContent = "Unknown Location";
+            });
+        
+        // Get device info
+        const deviceInfo = navigator.userAgent;
+        document.getElementById('device-info').textContent = deviceInfo;
+        
+        // Progress bar animation
+        setTimeout(() => {
+            document.getElementById('progressBar').style.width = '100%';
+        }, 100);
+        
+        // Console typing effect
+        const textContainer = document.getElementById('text-container');
+        const consoleLines = [
+            '> Initializing breach protocol...',
+            '> Bypassing firewall...',
+            '> ACCESS GRANTED',
+            '> Scanning system files...',
+            '> Extracting browser history...',
+            '> Extracting saved passwords...',
+            '> Extracting personal files...',
+            '> Downloading photos...',
+            '> Accessing social media accounts...',
+            '> Cloning contact list...',
+            '> Installing backdoor...',
+            '> Uploading data to remote server...',
+            '> WARNING: User detected viewing screen',
+            '> SECURITY PROTOCOL: Accelerating data extraction',
+            '> CRITICAL: Stop the breach immediately'
+        ];
+        
+        let lineIndex = 0;
+        
+        function addConsoleLine() {
+            if (lineIndex < consoleLines.length) {
+                const line = document.createElement('div');
+                line.classList.add('console-line');
+                line.textContent = consoleLines[lineIndex];
+                textContainer.appendChild(line);
+                lineIndex++;
+                
+                // Scroll to bottom
+                textContainer.scrollTop = textContainer.scrollHeight;
+                
+                // Random timing for next line
+                const nextTime = Math.random() * 1000 + 500;
+                setTimeout(addConsoleLine, nextTime);
+            }
+        }
+        
+        setTimeout(addConsoleLine, 1000);
+        
+        // Flash screen effect
+        function flashScreen() {
+            const overlay = document.getElementById('blink-overlay');
+            overlay.style.display = 'block';
+            setTimeout(() => {
+                overlay.style.display = 'none';
+            }, 100);
+            
+            if (Math.random() > 0.3) {
+                setTimeout(flashScreen, Math.random() * 3000 + 2000);
+            }
+        }
+        
+        setTimeout(flashScreen, 3000);
+        
+        // Handle recovery button
+        document.getElementById('recover-button').addEventListener('click', function() {
+            document.getElementById('hack-container').classList.add('hidden');
+            document.getElementById('reveal-container').classList.remove('hidden');
+            
+            // Generate share link (current page)
+            const shareLink = window.location.href;
+            document.getElementById('share-link').textContent = shareLink;
+        });
+        
+        // Handle share button
+        document.getElementById('share-button').addEventListener('click', function() {
+            // Copy link to clipboard
+            const shareLink = window.location.href;
+            navigator.clipboard.writeText(shareLink)
+                .then(() => {
+                    alert('Prank link copied to clipboard! Share it with your friends!');
+                })
+                .catch(err => {
+                    console.error('Could not copy text: ', err);
+                    prompt('Copy this link to share with friends:', shareLink);
+                });
+        });
+    </script>
+</body>
+</html>
